@@ -11,6 +11,7 @@ RUN echo "Setup git user" && \
 	adduser git -D && \
 	sed -i 's/^git:!:/git:\*:/g' /etc/shadow && \
 	sed -i 's/:\/home\/git:.*/:\/home\/git:\/usr\/bin\/git-shell/g' /etc/passwd && \
+	echo -e "umask 002\n" > /home/git/.profile && \
 	mkdir /home/git/.ssh && \
 	touch /home/git/.ssh/authorized_keys && \
 	chown git:git -R /home/git/.ssh && \
@@ -28,7 +29,9 @@ RUN echo "Setup git user" && \
 	chmod 600 /home/gitadmin/.ssh/authorized_keys && \
 	echo "Create repository directory" && \
 	mkdir /repos && \
-	chown gitadmin:git -R /repos
+	chown root:git -R /repos && \
+	chmod g+s /repos
+
 
 ENTRYPOINT ["/usr/local/bin/startup.sh"]
 CMD ["/usr/sbin/sshd","-e","-D"]
